@@ -99,6 +99,7 @@ for dataset in data:
     DR.append(dataset[5])
     RH.append(dataset[6])
 
+# Calculate boundary values for the data
 FG_min = min(FG)
 FG_max = max(FG)
 TG_min = min(TG)
@@ -114,6 +115,7 @@ DR_max = max(DR)
 RH_min = min(RH)
 RH_max = max(RH)
 
+# Scale the data to a range of 0-1
 for dataset in data:
   dataset[0] = scale(dataset[0], FG_min, FG_max)
   dataset[1] = scale(dataset[1], TG_min, TG_max)
@@ -132,6 +134,8 @@ def cluster_nodes(k):
 
   centroids = []
   random_points = []
+
+  # Determine the location of the centroids at random
   for i in range(k):
     random_index = randrange(len(data))
     while(random_index in random_points):
@@ -141,21 +145,25 @@ def cluster_nodes(k):
     
   done_clustering = False
 
+  # Keep clustering until the clusters stop changing
   while not done_clustering:
     new_clusters = []
     for i in range(k):
       new_clusters.append([])
 
+    # Calculate distances and cluster the nodes
     for node_ in nodes:
       distances = []
       for i in range(len(centroids)):
         distances.append([get_distance(node_, centroids[i]), i])
       new_clusters[min(distances)[1]].append(node_.index)
 
+    # Save the old clusters
     old_clusters = []
     for centroid_ in centroids:
       old_clusters.append(centroid_.node_indexes)
 
+    # Check if there is a change in clusters
     if new_clusters == old_clusters:
       done_clustering = True
     else:
@@ -165,6 +173,7 @@ def cluster_nodes(k):
   
   average_intra_cluster_distance = 0
 
+  # Calculate the intra cluster distance
   for centroid_ in centroids:
     centroid_.calculate_label()
     average_intra_cluster_distance += centroid_.get_intra_cluster_distance()
