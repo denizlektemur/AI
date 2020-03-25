@@ -70,6 +70,7 @@ for dataset in data:
     DR.append(dataset[5])
     RH.append(dataset[6])
 
+# calculate boundary values
 FG_min = min(FG)
 FG_max = max(FG)
 TG_min = min(TG)
@@ -87,6 +88,7 @@ RH_max = max(RH)
 
 scaled_data = data
 
+# Scaling dataset to a range of 0-1
 for dataset in scaled_data:
     dataset[0] = scale(dataset[0], FG_min, FG_max)
     dataset[1] = scale(dataset[1], TG_min, TG_max)
@@ -96,6 +98,7 @@ for dataset in scaled_data:
     dataset[5] = scale(dataset[5], DR_min, DR_max)
     dataset[6] = scale(dataset[6], RH_min, RH_max)
 
+# Scaling the validation set to a range of 0-1
 for dataset in validation_data:
     dataset[0] = scale(dataset[0], FG_min, FG_max)
     dataset[1] = scale(dataset[1], TG_min, TG_max)
@@ -113,12 +116,16 @@ found_labels = []
 for validation_day in range(len(validation_data)):
     found_labels.append([])
     distances = []
+
+    # Get all distances and sort them to find the closest node
     for i in range(len(scaled_data)):
         distances.append([get_distance(validation_data[validation_day], scaled_data[i]), i])
     distances.sort()
     nearest_labels = []
     for distance in distances:
         nearest_labels.append(labels[distance[1]])
+    
+    # Check the majority in the k amount of closest nodes
     for current_k in range(1, k+1):
         amount_winter = 0
         amount_lente = 0
@@ -146,11 +153,13 @@ for validation_day in range(len(validation_data)):
 
 k_percentages = []
 
+# Check the percentage of correctly labeled data for each k
 for i in range(len(found_labels[0])):
     found_validation_labels = []
     for j in range(len(found_labels)):
         found_validation_labels.append(found_labels[j][i])
     k_percentages.append([percentage_overlap(found_validation_labels, validation_labels), i+1])
 
+# Print the best K
 k_percentages.sort()
 print("Best K is", k_percentages[-1][1], "with a percentage of:", str(k_percentages[-1][0])+"%")
