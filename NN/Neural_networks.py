@@ -83,15 +83,44 @@ class neural_network:
                 self.backpropagation(expected_outputs[dataset])
                 self.update_neurons()              
 
-network = neural_network(2,1)
+network = neural_network(4,3)
 data_set = [[1,1], [1,0], [0,1], [0,0]]
 expected_data = [[0], [1], [1], [1]]
 
-network.train_network(data_set, expected_data)
-print("expected:", expected_data[0], "| output:", round(network.check_output(data_set[0])[0]))
-print("expected:", expected_data[1], "| output:", round(network.check_output(data_set[1])[0]))
-print("expected:", expected_data[2], "| output:", round(network.check_output(data_set[2])[0]))
-print("expected:", expected_data[3], "| output:", round(network.check_output(data_set[3])[0]))
+converter = lambda s: [1,0,0] if s == b"Iris-setosa" else ([0,1,0] if s == b"Iris-versicolor" else [0,0,1])
+
+data_set = np.genfromtxt('iris.data', delimiter=',', usecols=[0,1,2,3])
+expected_data = np.genfromtxt('iris.data', delimiter=',', usecols=[4], converters={4: converter})
+
+def round_arr(arr):
+	for i in range(len(arr)):
+		arr[i] = round(arr[i])
+	return arr
+
+def cmp(arr1, arr2):
+	for i in range(len(arr1)):
+		if (arr1[i] != arr2[i]):
+			return False
+	return True
+
+def accurate(expected, result):
+	total = len(result)
+	right = 0
+	for i in range(len(result)):
+		if (cmp(expected[i], result[i])):
+			right += 1
+
+	print( "accuracy: ", (right / total) * 100)
+
+network.train_network(data_set, expected_data, 1000)
+
+results = []
+
+for i in range(len(data_set)):
+	results.append(round_arr(network.check_output(data_set[i])))
+	print("expected:", expected_data[i], "| output:", results[i])
+
+accurate(expected_data, results)
 
 
     
