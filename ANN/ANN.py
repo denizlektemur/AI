@@ -15,7 +15,7 @@ def check_labels(labels):
 	new_labels = []
 	for i in range(len(labels)):
 		arr = [0] * 10
-		arr[i%10] = 1
+		arr[labels[i]] = 1
 
 		new_labels.append(np.array(arr))
 
@@ -36,17 +36,14 @@ data_set.close()
 model = Sequential()
 
 #input layer
-model.add(Dense(100, input_dim=784, activation='relu'))
+model.add(Dense(200, input_dim=784, activation='sigmoid'))
 
-model.add(Dense(60, activation='relu'))
-#model.add(Dropout(0.5))
+model.add(Dense(50, activation='sigmoid'))
+model.add(Dropout(0.5))
 
-model.add(Dense(20, activation='relu'))
-#model.add(Dropout(0.5))
+model.add(Dense(10, activation='sigmoid'))
 
-model.add(Dense(10, activation='softmax'))
-
-model.compile(optimizer=keras.optimizers.SGD(0.1), loss='categorical_crossentropy', metrics=['accuracy'])
+model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
 
 model.fit(train_set[0], check_labels(train_set[1]), 1024, 20)
 
